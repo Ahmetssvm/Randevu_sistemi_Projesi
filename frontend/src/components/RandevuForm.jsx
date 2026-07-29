@@ -32,7 +32,6 @@ const RandevuForm = ({ onRandevuOlustur, secilenPsikolog, onKapat }) => {
 
   // 3. Belirli bir saatin, seçilen psikolog ve tarihe göre dolu olup olmadığını kontrol eden fonksiyon
   const saatDoluMu = (saatStr) => {
-    // Eğer henüz tarih veya psikolog seçilmediyse saatler kilitlenmesin
     if (!date || !secilenPsikolog) return false;
 
     return doluRandevular.some((randevu) => {
@@ -53,6 +52,14 @@ const RandevuForm = ({ onRandevuOlustur, secilenPsikolog, onKapat }) => {
     onRandevuOlustur({ psikolog_id: secilenPsikolog, name, surname, date, time });
     setName(""); setSurname(""); setDate(""); setTime("");
   };
+
+  // 🔥 TARİH HESAPLAMALARI (BUGÜN VE 6 AY SONRASI)
+  const bugunTarih = new Date();
+  const bugun = bugunTarih.toISOString().split('T')[0]; // Bugünün tarihi (min)
+
+  const altiAySonraTarih = new Date(bugunTarih);
+  altiAySonraTarih.setMonth(altiAySonraTarih.getMonth() + 6); // Bugüne 6 ay ekle
+  const altiAySiniri = altiAySonraTarih.toISOString().split('T')[0]; // 6 ay sonrasının tarihi (max)
 
   const inputClass = "w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200";
 
@@ -76,7 +83,16 @@ const RandevuForm = ({ onRandevuOlustur, secilenPsikolog, onKapat }) => {
           <input type="text" placeholder="Soyadınız" value={surname} onChange={(e) => setSurname(e.target.value)} className={inputClass} required />
         </div>
 
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} required />
+        {/* 🔥 min={bugun} VE max={altiAySiniri} EKLENDİ */}
+        <input 
+          type="date" 
+          min={bugun} 
+          max={altiAySiniri}
+          value={date} 
+          onChange={(e) => setDate(e.target.value)} 
+          className={inputClass} 
+          required 
+        />
 
         <select value={time} onChange={(e) => setTime(e.target.value)} className={`${inputClass} bg-white appearance-none`} required>
           <option value="">Lütfen Bir Seans Saati Seçin</option>

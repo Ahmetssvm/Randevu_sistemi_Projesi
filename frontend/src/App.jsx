@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom"; // 🔥 1. Yönlendirme araçlarını çağırdık
 import "./App.css";
 import PsikologList from "./components/PsikologList";
 import RandevuForm from "./components/RandevuForm";
+import AdminPanel from "./components/AdminPanel";
 
 function App() {
   const [data, setData] = useState([]);
@@ -59,24 +61,40 @@ function App() {
         }
   };
 
-  return (
-    <>
-      <PsikologList
-        psikologlar={data}
-        secilenPsikolog={secilenPsikologId}
-        onPsikologSec={setSecilenPsikologId}
-      />
-
-      {secilenPsikologId > 0 && (
-          <RandevuForm 
-            secilenPsikolog={secilenPsikologId}
-            onRandevuOlustur={handleRandevuOlustur}
-            onKapat={()=>{setSecilenPsikologId(null)}}
-            doluRandevular={doluRandevular} // 🔥 Listeyi prop olarak form bileşenine gönderiyoruz
-          />
-        )
-      } 
-    </>
+ return (
+    <BrowserRouter>
+      <Routes>
+        
+        {/* 🚪 Müşteri Kapısı (Ana Sayfa) - Liste ve Form Bir Arada */}
+        {/* 🚪 Müşteri Kapısı (Ana Sayfa) - Liste ve Form Bir Arada */}
+        <Route 
+          path="/" 
+          element={
+            <>
+              <PsikologList
+                psikologlar={data}
+                secilenPsikolog={secilenPsikologId}
+                onPsikologSec={setSecilenPsikologId}
+              />
+              
+              {/* 🔥 HATA BURADAYDI: Sadece secilenPsikologId var mı diye kontrol ediyoruz */}
+              {secilenPsikologId && (
+                <RandevuForm 
+                  secilenPsikolog={secilenPsikologId}
+                  onRandevuOlustur={handleRandevuOlustur}
+                  onKapat={() => setSecilenPsikologId(null)}
+                  doluRandevular={doluRandevular} 
+                />
+              )}
+            </>
+          } 
+        />
+        
+        {/* 🚪 Admin Kapısı (Gizli Sayfa) */}
+        <Route path="/admin" element={<AdminPanel />} />
+        
+      </Routes>
+    </BrowserRouter>
   );
 }
 
