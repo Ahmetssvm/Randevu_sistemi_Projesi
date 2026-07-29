@@ -1,0 +1,7 @@
+.plgcard-btn:hover{
+    background-color: var(--color-blue-300);
+    padding: 5px;
+}
+.plgcard-btn{
+    transition: all 0.2s ease;
+}
